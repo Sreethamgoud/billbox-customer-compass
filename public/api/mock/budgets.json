@@ -1,0 +1,38 @@
+
+[
+  {
+    "id": 1,
+    "category": "Groceries",
+    "spent": 450,
+    "limit": 500,
+    "color": "green"
+  },
+  {
+    "id": 2,
+    "category": "Entertainment",
+    "spent": 280,
+    "limit": 200,
+    "color": "red"
+  },
+  {
+    "id": 3,
+    "category": "Transportation",
+    "spent": 120,
+    "limit": 300,
+    "color": "blue"
+  },
+  {
+    "id": 4,
+    "category": "Utilities",
+    "spent": 180,
+    "limit": 250,
+    "color": "yellow"
+  },
+  {
+    "id": 5,
+    "category": "Dining Out",
+    "spent": 340,
+    "limit": 300,
+    "color": "purple"
+  }
+]

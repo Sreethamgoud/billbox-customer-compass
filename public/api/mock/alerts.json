@@ -1,0 +1,38 @@
+
+[
+  {
+    "id": 1,
+    "message": "Your grocery budget is 90% used this month",
+    "type": "warning",
+    "time": "2h ago",
+    "read": false
+  },
+  {
+    "id": 2,
+    "message": "Electric bill payment confirmed",
+    "type": "success",
+    "time": "1d ago",
+    "read": false
+  },
+  {
+    "id": 3,
+    "message": "Unusual spending detected in Entertainment",
+    "type": "error",
+    "time": "3d ago",
+    "read": true
+  },
+  {
+    "id": 4,
+    "message": "Monthly budget report is ready",
+    "type": "info",
+    "time": "1w ago",
+    "read": true
+  },
+  {
+    "id": 5,
+    "message": "New bill detected: Amazon Prime",
+    "type": "info",
+    "time": "2w ago",
+    "read": true
+  }
+]

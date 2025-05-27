@@ -1,0 +1,38 @@
+
+[
+  {
+    "id": 1,
+    "name": "Bank of America",
+    "status": "connected",
+    "description": "Main checking account",
+    "type": "bank"
+  },
+  {
+    "id": 2,
+    "name": "Chase Credit Card",
+    "status": "connected",
+    "description": "Primary credit card",
+    "type": "credit"
+  },
+  {
+    "id": 3,
+    "name": "Gmail",
+    "status": "connected",
+    "description": "Email bill notifications",
+    "type": "email"
+  },
+  {
+    "id": 4,
+    "name": "Wells Fargo",
+    "status": "error",
+    "description": "Savings account",
+    "type": "bank"
+  },
+  {
+    "id": 5,
+    "name": "SMS Notifications",
+    "status": "disconnected",
+    "description": "Text message alerts",
+    "type": "sms"
+  }
+]

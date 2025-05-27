@@ -1,0 +1,19 @@
+
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "avatar": "/placeholder-avatar.jpg",
+    "plan": "Premium",
+    "joinDate": "2023-01-15"
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "email": "jane.smith@example.com",
+    "avatar": "/placeholder-avatar.jpg",
+    "plan": "Basic",
+    "joinDate": "2023-03-22"
+  }
+]
