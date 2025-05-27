@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Menu, X, Home, BarChart3, FileText, Bell, Zap, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Index = () => {
+const Integrations = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigation = [
@@ -31,11 +31,16 @@ const Index = () => {
             <div className="hidden md:flex items-center space-x-8">
               {navigation.map((item) => {
                 const Icon = item.icon;
+                const isActive = item.href === '/integrations';
                 return (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                      isActive 
+                        ? 'text-blue-600 bg-blue-50' 
+                        : 'text-gray-700 hover:text-blue-600'
+                    }`}
                   >
                     <Icon size={18} />
                     <span>{item.name}</span>
@@ -62,11 +67,16 @@ const Index = () => {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
               {navigation.map((item) => {
                 const Icon = item.icon;
+                const isActive = item.href === '/integrations';
                 return (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                      isActive 
+                        ? 'text-blue-600 bg-blue-50' 
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Icon size={20} />
@@ -85,22 +95,10 @@ const Index = () => {
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-2xl mx-auto">
             <div className="mb-6">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Home className="w-10 h-10 text-blue-600" />
+                <Zap className="w-10 h-10 text-blue-600" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Welcome to BillBox
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Your comprehensive financial management platform
-            </p>
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
-            >
-              Get Started
-              <BarChart3 className="ml-2 w-5 h-5" />
-            </Link>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Integrations</h1>
           </div>
         </div>
       </main>
@@ -108,4 +106,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Integrations;
