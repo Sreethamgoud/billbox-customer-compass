@@ -1,11 +1,14 @@
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Bell, User } from 'lucide-react';
+import { Menu, X, Bell, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Layout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -17,6 +20,11 @@ const Layout = ({ children }) => {
   ];
 
   const isActive = (href) => location.pathname === href;
+
+  const handleSignOut = async () => {
+    await signOut();
+    setShowUserMenu(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,9 +61,31 @@ const Layout = ({ children }) => {
               <button className="p-2 text-gray-400 hover:text-gray-500">
                 <Bell size={20} />
               </button>
-              <button className="p-2 text-gray-400 hover:text-gray-500">
-                <User size={20} />
-              </button>
+              
+              {/* User menu */}
+              <div className="relative">
+                <button 
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="p-2 text-gray-400 hover:text-gray-500 flex items-center space-x-2"
+                >
+                  <User size={20} />
+                  <span className="hidden md:inline text-sm text-gray-700">
+                    {user?.email}
+                  </span>
+                </button>
+                
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                    >
+                      <LogOut size={16} />
+                      <span>Sign out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
               
               {/* Mobile menu button */}
               <button
@@ -86,6 +116,16 @@ const Layout = ({ children }) => {
                   {item.name}
                 </Link>
               ))}
+              <button
+                onClick={() => {
+                  handleSignOut();
+                  setIsMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 w-full text-left"
+              >
+                <LogOut size={16} />
+                <span>Sign out</span>
+              </button>
             </div>
           </div>
         )}
