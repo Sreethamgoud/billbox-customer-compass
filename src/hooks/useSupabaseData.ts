@@ -9,7 +9,7 @@ const mockBills = [
     name: "Netflix",
     amount: 15.99,
     dueDate: "2024-01-15",
-    status: "paid",
+    status: "paid" as const,
     category: "Entertainment"
   },
   {
@@ -17,7 +17,7 @@ const mockBills = [
     name: "Electric Bill",
     amount: 127.43,
     dueDate: "2024-01-18",
-    status: "due",
+    status: "due" as const,
     category: "Utilities"
   },
   {
@@ -25,7 +25,7 @@ const mockBills = [
     name: "Internet",
     amount: 79.99,
     dueDate: "2024-01-20",
-    status: "due",
+    status: "due" as const,
     category: "Utilities"
   }
 ];
@@ -58,14 +58,14 @@ const mockAlerts = [
   {
     id: 1,
     message: "Your grocery budget is 90% used this month",
-    type: "warning",
+    type: "warning" as const,
     time: "2h ago",
     read: false
   },
   {
     id: 2,
     message: "Electric bill payment confirmed",
-    type: "success",
+    type: "success" as const,
     time: "1d ago",
     read: false
   }
