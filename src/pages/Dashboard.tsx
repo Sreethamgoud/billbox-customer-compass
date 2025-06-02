@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Menu, X, Home, BarChart3, FileText, Bell, Zap, Settings as SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -14,6 +13,7 @@ import AIAssistant from "../components/AIAssistant";
 
 const Dashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTimeframe, setActiveTimeframe] = useState(0);
   const { data: mockData, error, isLoading } = useMockData();
 
   const navigation = [
@@ -24,6 +24,11 @@ const Dashboard = () => {
     { name: 'Integrations', href: '/integrations', icon: Zap },
     { name: 'Profile & Settings', href: '/settings', icon: SettingsIcon },
   ];
+
+  // Mock data fallbacks
+  const bills = mockData?.bills || [];
+  const budgets = mockData?.budgets || [];
+  const alerts = mockData?.alerts || [];
 
   if (isLoading) {
     return (
@@ -136,23 +141,26 @@ const Dashboard = () => {
           </div>
 
           {/* Overview Cards */}
-          <OverviewCards mockData={mockData} />
+          <OverviewCards isLoading={isLoading} />
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <SpendTrendChart mockData={mockData} />
-            <CategoryBreakdownChart mockData={mockData} />
+            <SpendTrendChart 
+              activeTimeframe={activeTimeframe} 
+              onTimeframeChange={setActiveTimeframe} 
+            />
+            <CategoryBreakdownChart />
           </div>
 
           {/* Recent Bills and Budget Progress */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <RecentBillsTable mockData={mockData} />
-            <BudgetProgressSection mockData={mockData} />
+            <RecentBillsTable bills={bills} isLoading={isLoading} />
+            <BudgetProgressSection budgets={budgets} isLoading={isLoading} />
           </div>
 
           {/* Alerts and Quick Actions */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <AlertsPanel mockData={mockData} />
+            <AlertsPanel alerts={alerts} isLoading={isLoading} />
             <QuickActionsSection />
           </div>
 
