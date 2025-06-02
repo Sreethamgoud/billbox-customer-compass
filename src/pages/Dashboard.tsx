@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { Menu, X, Home, BarChart3, FileText, Bell, Zap, Settings as SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import useMockData from "../hooks/useMockData";
+import { useMockData } from "../hooks/useMockData";
 import OverviewCards from "../components/dashboard/OverviewCards";
 import SpendTrendChart from "../components/dashboard/SpendTrendChart";
 import CategoryBreakdownChart from "../components/dashboard/CategoryBreakdownChart";
