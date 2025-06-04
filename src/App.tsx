@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
 import Budgets from "./pages/Budgets";
+import Bills from "./pages/Bills";
 import Integrations from "./pages/Integrations";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
@@ -32,6 +33,13 @@ const App = () => (
               <ProtectedRoute>
                 <Layout>
                   <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/bills" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Bills />
                 </Layout>
               </ProtectedRoute>
             } />

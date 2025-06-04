@@ -2,86 +2,54 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-// For now, we'll use mock data until we set up the database tables
-const mockBills = [
-  {
-    id: 1,
-    name: "Netflix",
-    amount: 15.99,
-    dueDate: "2024-01-15",
-    status: "paid" as const,
-    category: "Entertainment"
-  },
-  {
-    id: 2,
-    name: "Electric Bill",
-    amount: 127.43,
-    dueDate: "2024-01-18",
-    status: "due" as const,
-    category: "Utilities"
-  },
-  {
-    id: 3,
-    name: "Internet",
-    amount: 79.99,
-    dueDate: "2024-01-20",
-    status: "due" as const,
-    category: "Utilities"
-  }
-];
-
-const mockBudgets = [
-  {
-    id: 1,
-    category: "Groceries",
-    spent: 450,
-    limit: 500,
-    color: "green"
-  },
-  {
-    id: 2,
-    category: "Entertainment",
-    spent: 280,
-    limit: 200,
-    color: "red"
-  },
-  {
-    id: 3,
-    category: "Transportation",
-    spent: 120,
-    limit: 300,
-    color: "blue"
-  }
-];
-
-const mockAlerts = [
-  {
-    id: 1,
-    message: "Your grocery budget is 90% used this month",
-    type: "warning" as const,
-    time: "2h ago",
-    read: false
-  },
-  {
-    id: 2,
-    message: "Electric bill payment confirmed",
-    type: "success" as const,
-    time: "1d ago",
-    read: false
-  }
-];
-
 export const useSupabaseData = () => {
-  // For now, return mock data instantly
-  // Later we'll replace this with actual Supabase queries
+  const { data: bills, isLoading: billsLoading, error: billsError } = useQuery({
+    queryKey: ['bills'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bills')
+        .select('*')
+        .order('due_date', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: budgets, isLoading: budgetsLoading, error: budgetsError } = useQuery({
+    queryKey: ['budgets'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: alerts, isLoading: alertsLoading, error: alertsError } = useQuery({
+    queryKey: ['alerts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('alerts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   return {
     data: {
-      bills: mockBills,
-      budgets: mockBudgets,
-      alerts: mockAlerts,
+      bills: bills || [],
+      budgets: budgets || [],
+      alerts: alerts || [],
     },
-    isLoading: false,
-    error: null,
+    isLoading: billsLoading || budgetsLoading || alertsLoading,
+    error: billsError || budgetsError || alertsError,
   };
 };
 
@@ -89,9 +57,13 @@ export const useBills = () => {
   return useQuery({
     queryKey: ['bills'],
     queryFn: async () => {
-      // For now return mock data
-      // Later: const { data, error } = await supabase.from('bills').select('*');
-      return mockBills;
+      const { data, error } = await supabase
+        .from('bills')
+        .select('*')
+        .order('due_date', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -100,9 +72,13 @@ export const useBudgets = () => {
   return useQuery({
     queryKey: ['budgets'],
     queryFn: async () => {
-      // For now return mock data
-      // Later: const { data, error } = await supabase.from('budgets').select('*');
-      return mockBudgets;
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -111,9 +87,43 @@ export const useAlerts = () => {
   return useQuery({
     queryKey: ['alerts'],
     queryFn: async () => {
-      // For now return mock data
-      // Later: const { data, error } = await supabase.from('alerts').select('*');
-      return mockAlerts;
+      const { data, error } = await supabase
+        .from('alerts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+};
+
+export const useTransactions = () => {
+  return useQuery({
+    queryKey: ['transactions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .order('transaction_date', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+};
+
+export const useProfile = () => {
+  return useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
   });
 };
