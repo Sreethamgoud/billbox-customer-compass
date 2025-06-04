@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [activeTimeframe, setActiveTimeframe] = useState(0);
   const { data: dashboardData, error, isLoading } = useSupabaseData();
 
-  // Extract data from the response
+  // Extract data from the response with proper typing
   const bills = dashboardData?.bills || [];
   const budgets = dashboardData?.budgets || [];
   const alerts = dashboardData?.alerts || [];
