@@ -134,3 +134,95 @@ export const useSupabaseData = () => {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
+
+// Individual hooks for specific data types
+export const useBills = () => {
+  return useQuery({
+    queryKey: ['bills'],
+    queryFn: async () => {
+      console.log('Fetching bills...');
+      const { data: bills, error } = await supabase
+        .from('bills')
+        .select('*')
+        .order('due_date', { ascending: true });
+      
+      if (error) {
+        console.error('Error fetching bills:', error);
+        throw error;
+      }
+
+      return (bills || []).map(bill => ({
+        ...bill,
+        status: bill.status as 'paid' | 'due' | 'upcoming'
+      })) as Bill[];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useBudgets = () => {
+  return useQuery({
+    queryKey: ['budgets'],
+    queryFn: async () => {
+      console.log('Fetching budgets...');
+      const { data: budgets, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching budgets:', error);
+        throw error;
+      }
+
+      return budgets as Budget[] || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useAlerts = () => {
+  return useQuery({
+    queryKey: ['alerts'],
+    queryFn: async () => {
+      console.log('Fetching alerts...');
+      const { data: alerts, error } = await supabase
+        .from('alerts')
+        .select('*')
+        .eq('read', false)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching alerts:', error);
+        throw error;
+      }
+
+      return (alerts || []).map(alert => ({
+        ...alert,
+        type: alert.type as 'success' | 'warning' | 'error' | 'info'
+      })) as Alert[];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useTransactions = () => {
+  return useQuery({
+    queryKey: ['transactions'],
+    queryFn: async () => {
+      console.log('Fetching transactions...');
+      const { data: transactions, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .order('transaction_date', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching transactions:', error);
+        throw error;
+      }
+
+      return transactions as Transaction[] || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
