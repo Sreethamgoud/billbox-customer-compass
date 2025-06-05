@@ -43,8 +43,8 @@ export const useAuth = () => {
     try {
       console.log('Updating sample data for user:', userId);
       const { error } = await supabase.rpc('update_sample_data_for_user', {
-        user_uuid: userId as any
-      });
+        user_uuid: userId
+      } as { user_uuid: string });
       
       if (error) {
         console.error('Error updating sample data:', error);
