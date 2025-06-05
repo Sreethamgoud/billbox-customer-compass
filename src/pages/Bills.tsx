@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import BillUpload from '@/components/BillUpload';
+import BillUploadForm from '@/components/BillUploadForm';
 
 const Bills = () => {
   const { data: bills, isLoading } = useBills();
@@ -178,7 +178,7 @@ const Bills = () => {
           </TabsList>
 
           <TabsContent value="upload" className="mt-6">
-            <BillUpload />
+            <BillUploadForm />
           </TabsContent>
 
           <TabsContent value="manage" className="mt-6">

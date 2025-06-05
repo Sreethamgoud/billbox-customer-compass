@@ -5,21 +5,24 @@ import { useToast } from '@/hooks/use-toast';
 
 export const useFileUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const { toast } = useToast();
 
   const uploadFile = async (file: File): Promise<string | null> => {
     try {
       setIsUploading(true);
+      setUploadProgress(0);
       
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Create unique filename
+      // Create unique filename with user folder structure
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       console.log('Uploading file:', fileName);
 
+      // Upload file to the bills bucket
       const { data, error } = await supabase.storage
         .from('bills')
         .upload(fileName, file, {
@@ -31,6 +34,8 @@ export const useFileUpload = () => {
         console.error('Upload error:', error);
         throw error;
       }
+
+      setUploadProgress(100);
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
@@ -49,20 +54,25 @@ export const useFileUpload = () => {
       console.error('Upload failed:', error);
       toast({
         title: "Upload Failed",
-        description: error.message,
+        description: error.message || 'Failed to upload file',
         variant: "destructive",
       });
       return null;
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
   const deleteFile = async (filePath: string): Promise<boolean> => {
     try {
+      // Extract just the path part from the full URL
+      const pathMatch = filePath.match(/\/storage\/v1\/object\/public\/bills\/(.+)$/);
+      const actualPath = pathMatch ? pathMatch[1] : filePath;
+
       const { error } = await supabase.storage
         .from('bills')
-        .remove([filePath]);
+        .remove([actualPath]);
 
       if (error) throw error;
 
@@ -87,5 +97,6 @@ export const useFileUpload = () => {
     uploadFile,
     deleteFile,
     isUploading,
+    uploadProgress,
   };
 };

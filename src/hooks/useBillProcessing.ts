@@ -19,8 +19,8 @@ export interface ProcessedBillData {
 
 export const useBillProcessing = () => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { uploadFile, isUploading } = useFileUpload();
-  const { extractTextFromImage, isProcessing: isOCRProcessing } = useOCR();
+  const { uploadFile, isUploading, uploadProgress } = useFileUpload();
+  const { extractTextFromUrl, isProcessing: isOCRProcessing, ocrProgress } = useOCR();
   const { createBill } = useBillMutations();
   const { toast } = useToast();
 
@@ -30,18 +30,21 @@ export const useBillProcessing = () => {
       console.log('Starting bill processing pipeline...');
 
       // Step 1: Upload file to storage
+      console.log('Step 1: Uploading file...');
       const fileUrl = await uploadFile(file);
       if (!fileUrl) {
         throw new Error('Failed to upload file');
       }
 
-      // Step 2: Extract text using OCR
-      const extractedData = await extractTextFromImage(file);
+      // Step 2: Extract text using OCR from the uploaded file URL
+      console.log('Step 2: Extracting text with OCR...');
+      const extractedData = await extractTextFromUrl(fileUrl);
       if (!extractedData) {
-        throw new Error('Failed to extract text from image');
+        throw new Error('Failed to extract text from file');
       }
 
       // Step 3: Categorize using AI
+      console.log('Step 3: Categorizing with AI...');
       const { data: categorization, error } = await supabase.functions.invoke('categorize-bill', {
         body: { billData: extractedData },
       });
@@ -58,8 +61,10 @@ export const useBillProcessing = () => {
         name: extractedData.merchant || 'Uploaded Bill',
         amount: extractedData.amount || 0,
         category: categorization.category || 'Other',
-        description: `AI categorized with ${categorization.confidence}% confidence: ${categorization.reasoning}`,
-        due_date: extractedData.date ? new Date(extractedData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        description: `AI extracted from receipt. ${categorization.reasoning || ''}`,
+        due_date: extractedData.date 
+          ? formatDateForInput(extractedData.date) 
+          : new Date().toISOString().split('T')[0],
         file_url: fileUrl,
         confidence: categorization.confidence,
         reasoning: categorization.reasoning,
@@ -83,6 +88,37 @@ export const useBillProcessing = () => {
       return null;
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const formatDateForInput = (dateString: string): string => {
+    try {
+      // Try to parse various date formats
+      let date: Date;
+      
+      if (dateString.match(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/)) {
+        // MM/DD/YYYY or M/D/YY format
+        date = new Date(dateString);
+      } else if (dateString.match(/^\d{1,2}-\d{1,2}-\d{2,4}$/)) {
+        // MM-DD-YYYY format
+        date = new Date(dateString.replace(/-/g, '/'));
+      } else if (dateString.match(/^\w{3,9}\s+\d{1,2},?\s+\d{2,4}$/i)) {
+        // "January 15, 2024" format
+        date = new Date(dateString);
+      } else {
+        // Try as-is
+        date = new Date(dateString);
+      }
+
+      if (isNaN(date.getTime())) {
+        // If parsing failed, return today's date
+        return new Date().toISOString().split('T')[0];
+      }
+
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Date parsing error:', error);
+      return new Date().toISOString().split('T')[0];
     }
   };
 
@@ -116,5 +152,7 @@ export const useBillProcessing = () => {
     processUploadedBill,
     saveBill,
     isProcessing: isProcessing || isUploading || isOCRProcessing,
+    uploadProgress,
+    ocrProgress,
   };
 };

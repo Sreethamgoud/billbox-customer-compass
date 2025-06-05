@@ -34,15 +34,26 @@ export const useBillMutations = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (newBill) => {
+      // Invalidate and refetch bills data
       queryClient.invalidateQueries({ queryKey: ['bills'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+      
+      // Optimistically update the bills cache
+      queryClient.setQueryData(['bills'], (oldData: any) => {
+        if (oldData) {
+          return [...oldData, newBill];
+        }
+        return [newBill];
+      });
+
       toast({
         title: "Success",
         description: "Bill created successfully",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Create bill error:', error);
       toast({
         title: "Error",
         description: `Failed to create bill: ${error.message}`,

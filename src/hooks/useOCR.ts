@@ -2,55 +2,47 @@
 import { useState } from 'react';
 import Tesseract from 'tesseract.js';
 import { useToast } from '@/hooks/use-toast';
+import { parseOCRText, ParsedBillData } from '@/utils/ocrTextParser';
 
-export interface ExtractedBillData {
+export interface ExtractedBillData extends ParsedBillData {
   text: string;
-  amount?: number;
-  date?: string;
-  merchant?: string;
-  category?: string;
 }
 
 export const useOCR = () => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
   const { toast } = useToast();
 
-  const extractTextFromImage = async (file: File): Promise<ExtractedBillData | null> => {
+  const extractTextFromFile = async (file: File): Promise<ExtractedBillData | null> => {
     try {
       setIsProcessing(true);
+      setOcrProgress(0);
       console.log('Starting OCR processing...');
 
       const { data: { text } } = await Tesseract.recognize(file, 'eng', {
-        logger: (m) => console.log('OCR Progress:', m),
+        logger: (m) => {
+          console.log('OCR Progress:', m);
+          if (m.status === 'recognizing text') {
+            setOcrProgress(Math.round(m.progress * 100));
+          }
+        },
       });
 
       console.log('OCR Result:', text);
 
-      // Basic text parsing for common bill patterns
-      const extractedData: ExtractedBillData = { text };
+      // Parse the extracted text
+      const parsedData = parseOCRText(text);
+      
+      const extractedData: ExtractedBillData = {
+        text,
+        ...parsedData
+      };
 
-      // Extract amount (looking for currency patterns)
-      const amountMatch = text.match(/\$?\s*(\d+\.?\d*)/g);
-      if (amountMatch) {
-        const amounts = amountMatch.map(a => parseFloat(a.replace(/\$|\s/g, '')));
-        extractedData.amount = Math.max(...amounts.filter(a => !isNaN(a) && a > 0));
-      }
-
-      // Extract date patterns
-      const dateMatch = text.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})|(\d{1,2}-\d{1,2}-\d{2,4})|(\w{3,9}\s+\d{1,2},?\s+\d{2,4})/i);
-      if (dateMatch) {
-        extractedData.date = dateMatch[0];
-      }
-
-      // Extract potential merchant name (usually first line or after common patterns)
-      const lines = text.split('\n').filter(line => line.trim().length > 0);
-      if (lines.length > 0) {
-        extractedData.merchant = lines[0].trim();
-      }
+      console.log('Parsed bill data:', extractedData);
 
       toast({
         title: "Success",
-        description: "Text extracted from bill image",
+        description: "Text extracted from bill successfully",
       });
 
       return extractedData;
@@ -64,11 +56,61 @@ export const useOCR = () => {
       return null;
     } finally {
       setIsProcessing(false);
+      setOcrProgress(0);
+    }
+  };
+
+  const extractTextFromUrl = async (fileUrl: string): Promise<ExtractedBillData | null> => {
+    try {
+      setIsProcessing(true);
+      setOcrProgress(0);
+      console.log('Starting OCR processing from URL:', fileUrl);
+
+      const { data: { text } } = await Tesseract.recognize(fileUrl, 'eng', {
+        logger: (m) => {
+          console.log('OCR Progress:', m);
+          if (m.status === 'recognizing text') {
+            setOcrProgress(Math.round(m.progress * 100));
+          }
+        },
+      });
+
+      console.log('OCR Result:', text);
+
+      // Parse the extracted text
+      const parsedData = parseOCRText(text);
+      
+      const extractedData: ExtractedBillData = {
+        text,
+        ...parsedData
+      };
+
+      console.log('Parsed bill data:', extractedData);
+
+      toast({
+        title: "Success",
+        description: "Text extracted from bill successfully",
+      });
+
+      return extractedData;
+    } catch (error: any) {
+      console.error('OCR failed:', error);
+      toast({
+        title: "OCR Failed",
+        description: "Could not extract text from file",
+        variant: "destructive",
+      });
+      return null;
+    } finally {
+      setIsProcessing(false);
+      setOcrProgress(0);
     }
   };
 
   return {
-    extractTextFromImage,
+    extractTextFromFile,
+    extractTextFromUrl,
     isProcessing,
+    ocrProgress,
   };
 };

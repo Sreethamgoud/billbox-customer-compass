@@ -8,8 +8,8 @@ const corsHeaders = {
 
 interface BillData {
   text: string;
-  amount?: number;
   merchant?: string;
+  amount?: number;
   date?: string;
 }
 
@@ -74,7 +74,7 @@ Example response:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',

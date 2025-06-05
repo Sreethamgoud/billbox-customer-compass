@@ -43,6 +43,7 @@ export type Database = {
           created_at: string
           description: string | null
           due_date: string
+          file_url: string | null
           id: string
           name: string
           recurring: boolean | null
@@ -57,6 +58,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date: string
+          file_url?: string | null
           id?: string
           name: string
           recurring?: boolean | null
@@ -71,6 +73,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string
+          file_url?: string | null
           id?: string
           name?: string
           recurring?: boolean | null
