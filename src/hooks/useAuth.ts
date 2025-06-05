@@ -19,11 +19,12 @@ export const useAuth = () => {
         setUser(session?.user ?? null);
         setLoading(false);
 
-        // When user signs up or signs in, update sample data with their ID
+        // When user signs up or signs in, show welcome message
         if (event === 'SIGNED_IN' && session?.user) {
-          setTimeout(() => {
-            updateSampleDataForUser(session.user.id);
-          }, 0);
+          toast({
+            title: "Welcome!",
+            description: "You have successfully signed in to BillBox",
+          });
         }
       }
     );
@@ -38,27 +39,6 @@ export const useAuth = () => {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const updateSampleDataForUser = async (userId: string) => {
-    try {
-      console.log('Updating sample data for user:', userId);
-      const { error } = await supabase.rpc('update_sample_data_for_user', {
-        user_uuid: userId
-      });
-      
-      if (error) {
-        console.error('Error updating sample data:', error);
-      } else {
-        console.log('Sample data updated successfully');
-        toast({
-          title: "Welcome!",
-          description: "Sample data has been loaded for your account",
-        });
-      }
-    } catch (error) {
-      console.error('Failed to update sample data:', error);
-    }
-  };
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
