@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -12,6 +11,7 @@ export interface Bill {
   description?: string;
   recurring?: boolean;
   recurring_frequency?: string;
+  file_url?: string;
   user_id: string;
   created_at: string;
   updated_at: string;

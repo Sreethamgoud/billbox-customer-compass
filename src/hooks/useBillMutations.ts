@@ -17,6 +17,7 @@ export const useBillMutations = () => {
       description?: string;
       recurring?: boolean;
       recurring_frequency?: 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+      file_url?: string;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
@@ -35,6 +36,7 @@ export const useBillMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bills'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
       toast({
         title: "Success",
         description: "Bill created successfully",
@@ -59,6 +61,7 @@ export const useBillMutations = () => {
       description: string;
       recurring: boolean;
       recurring_frequency: 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+      file_url: string;
     }>) => {
       const { data, error } = await supabase
         .from('bills')
@@ -72,6 +75,7 @@ export const useBillMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bills'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
       toast({
         title: "Success",
         description: "Bill updated successfully",
