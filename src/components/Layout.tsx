@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Bell, User, LogOut } from 'lucide-react';
@@ -143,7 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2024 BillBox. All rights reserved.</p>
+          <p>&copy; 2025 BillBox. All rights reserved.</p>
         </div>
       </footer>
     </div>
