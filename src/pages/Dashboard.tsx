@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSupabaseData } from "../hooks/useSupabaseData";
 import OverviewCards from "../components/dashboard/OverviewCards";
 import SpendTrendChart from "../components/dashboard/SpendTrendChart";
@@ -12,12 +12,34 @@ import AIAssistant from "../components/AIAssistant";
 
 const Dashboard = () => {
   const [activeTimeframe, setActiveTimeframe] = useState(0);
-  const { data: dashboardData, error, isLoading } = useSupabaseData();
+  // Force refresh when navigating back to the dashboard
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { data: dashboardData, error, isLoading, refetch } = useSupabaseData();
 
   // Extract data from the response with proper typing
   const bills = dashboardData?.bills || [];
   const budgets = dashboardData?.budgets || [];
   const alerts = dashboardData?.alerts || [];
+
+  // Refresh data when component mounts or when returning to this page
+  useEffect(() => {
+    refetch();
+  }, [refetch, refreshKey]);
+
+  // Add event listener for page visibility changes to refresh data
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refetch();
+        setRefreshKey(prev => prev + 1);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -36,7 +58,10 @@ const Dashboard = () => {
         <div className="text-center">
           <p className="text-red-600 mb-4">Error loading dashboard data</p>
           <button 
-            onClick={() => window.location.reload()} 
+            onClick={() => {
+              refetch();
+              setRefreshKey(prev => prev + 1);
+            }} 
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Retry

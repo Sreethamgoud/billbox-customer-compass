@@ -1,38 +1,71 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TrendingUp, TrendingDown, Bell } from 'lucide-react';
 import StatCard from '../StatCard';
+import { useSupabaseData, Bill } from '@/hooks/useSupabaseData';
 
 interface OverviewCardsProps {
   isLoading?: boolean;
 }
 
 const OverviewCards: React.FC<OverviewCardsProps> = ({ isLoading = false }) => {
+  const { data, error } = useSupabaseData();
+  const bills = data?.bills || [];
+
+  const stats = useMemo(() => {
+    // Calculate total balance (sum of all bill amounts)
+    const totalBillAmount = bills.reduce((sum, bill) => sum + Number(bill.amount), 0);
+    
+    // Calculate monthly spending (bills due this month)
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    
+    const thisMonthBills = bills.filter(bill => {
+      const dueDate = new Date(bill.due_date);
+      return dueDate.getMonth() === currentMonth && dueDate.getFullYear() === currentYear;
+    });
+    
+    const monthlySpending = thisMonthBills.reduce((sum, bill) => sum + Number(bill.amount), 0);
+    
+    // Calculate bills due (count of upcoming bills)
+    const billsDue = bills.filter(bill => bill.status === 'upcoming' || bill.status === 'due').length;
+    
+    // Calculate savings goal (dummy calculation - 70% of total)
+    const savingsGoal = Math.round((1 - (monthlySpending / (totalBillAmount || 1))) * 100);
+    
+    return {
+      totalBalance: totalBillAmount.toFixed(2),
+      monthlySpending: monthlySpending.toFixed(2),
+      billsDue,
+      savingsGoal: Math.min(Math.max(savingsGoal, 0), 100), // Clamp between 0-100
+    };
+  }, [bills]);
+
   const overviewStats = [
     {
       title: "Total Balance",
-      value: "$24,580.32",
+      value: `$${stats.totalBalance}`,
       change: "+12.3%",
       trend: "positive" as const,
       icon: TrendingUp
     },
     {
       title: "Monthly Spending",
-      value: "$3,247.89",
+      value: `$${stats.monthlySpending}`,
       change: "-8.1%",
       trend: "positive" as const,
       icon: TrendingDown
     },
     {
       title: "Bills Due",
-      value: "5",
+      value: `${stats.billsDue}`,
       change: "This week",
       trend: "neutral" as const,
       icon: Bell
     },
     {
       title: "Savings Goal",
-      value: "67%",
+      value: `${stats.savingsGoal}%`,
       change: "+5% this month",
       trend: "positive" as const,
       icon: TrendingUp
