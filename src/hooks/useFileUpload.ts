@@ -22,6 +22,11 @@ export const useFileUpload = () => {
 
       console.log('Uploading file:', fileName);
 
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 20, 90));
+      }, 200);
+
       // Upload file to the bills bucket
       const { data, error } = await supabase.storage
         .from('bills')
@@ -29,6 +34,8 @@ export const useFileUpload = () => {
           cacheControl: '3600',
           upsert: false,
         });
+
+      clearInterval(progressInterval);
 
       if (error) {
         console.error('Upload error:', error);
