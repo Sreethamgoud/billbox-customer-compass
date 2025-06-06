@@ -26,13 +26,17 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Received categorization request');
     const { billData }: { billData: BillData } = await req.json();
-    console.log('Received bill data for categorization:', billData);
+    console.log('Bill data for categorization:', billData);
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
+      console.error('OpenAI API key not found');
       throw new Error('OpenAI API key not configured');
     }
+
+    console.log('OpenAI API key found, proceeding with categorization');
 
     // Create prompt for OpenAI
     const prompt = `
@@ -91,25 +95,29 @@ Example response:
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API request failed: ${response.status}`);
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API request failed: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('OpenAI response:', data);
+    console.log('OpenAI response received:', data);
 
     const aiResponse = data.choices[0]?.message?.content;
     if (!aiResponse) {
+      console.error('No response content from OpenAI');
       throw new Error('No response from OpenAI');
     }
+
+    console.log('AI response content:', aiResponse);
 
     // Parse the JSON response
     let result: CategorizationResult;
     try {
       result = JSON.parse(aiResponse);
+      console.log('Parsed categorization result:', result);
     } catch (parseError) {
-      console.error('Failed to parse OpenAI response:', aiResponse);
+      console.error('Failed to parse OpenAI response as JSON:', aiResponse, parseError);
       // Fallback categorization
       result = {
         category: 'Other',
@@ -117,8 +125,6 @@ Example response:
         reasoning: 'Could not determine category from bill text'
       };
     }
-
-    console.log('Categorization result:', result);
 
     return new Response(
       JSON.stringify(result),

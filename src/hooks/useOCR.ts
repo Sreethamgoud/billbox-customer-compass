@@ -19,6 +19,11 @@ export const useOCR = () => {
       setOcrProgress(0);
       console.log('Starting OCR processing...');
 
+      // Check if file is PDF and reject it for now
+      if (file.type === 'application/pdf') {
+        throw new Error('PDF processing is not supported yet. Please upload an image file (JPG, PNG, WEBP).');
+      }
+
       const { data: { text } } = await Tesseract.recognize(file, 'eng', {
         logger: (m) => {
           console.log('OCR Progress:', m);
@@ -50,7 +55,7 @@ export const useOCR = () => {
       console.error('OCR failed:', error);
       toast({
         title: "OCR Failed",
-        description: "Could not extract text from image",
+        description: error.message || "Could not extract text from image",
         variant: "destructive",
       });
       return null;
@@ -65,6 +70,11 @@ export const useOCR = () => {
       setIsProcessing(true);
       setOcrProgress(0);
       console.log('Starting OCR processing from URL:', fileUrl);
+
+      // Check if URL contains PDF and reject it
+      if (fileUrl.toLowerCase().includes('.pdf')) {
+        throw new Error('PDF processing is not supported yet. Please upload an image file (JPG, PNG, WEBP).');
+      }
 
       const { data: { text } } = await Tesseract.recognize(fileUrl, 'eng', {
         logger: (m) => {
@@ -97,7 +107,7 @@ export const useOCR = () => {
       console.error('OCR failed:', error);
       toast({
         title: "OCR Failed",
-        description: "Could not extract text from file",
+        description: error.message || "Could not extract text from file",
         variant: "destructive",
       });
       return null;

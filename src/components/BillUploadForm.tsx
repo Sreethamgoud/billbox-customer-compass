@@ -19,6 +19,13 @@ const BillUploadForm: React.FC = () => {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Check file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please upload an image file (JPG, PNG, WEBP). PDF support coming soon!');
+        return;
+      }
+      
       setSelectedFile(file);
       setProcessedData(null);
       setIsEditing(false);
@@ -98,17 +105,20 @@ const BillUploadForm: React.FC = () => {
               <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <div className="space-y-2">
                 <Label htmlFor="bill-upload" className="text-lg font-medium cursor-pointer">
-                  Choose a bill image or PDF
+                  Choose a bill image
                 </Label>
                 <Input
                   id="bill-upload"
                   type="file"
-                  accept="image/*,application/pdf"
+                  accept="image/jpeg,image/png,image/webp,image/jpg"
                   onChange={handleFileSelect}
                   className="hidden"
                 />
                 <p className="text-sm text-gray-500">
-                  Supports JPG, PNG, WEBP, and PDF files up to 10MB
+                  Supports JPG, PNG, WEBP files up to 10MB
+                </p>
+                <p className="text-xs text-amber-600">
+                  Note: PDF support coming soon! Please use image files for now.
                 </p>
               </div>
             </div>
