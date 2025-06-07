@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Plus, Upload } from 'lucide-react';
 import { useBills } from '@/hooks/useSupabaseData';
@@ -76,22 +77,27 @@ const Bills = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 relative z-0">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Bills Management</h1>
             <p className="text-gray-600 mt-2">Upload bills with AI categorization or add manually</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 relative z-20">
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm transition-colors cursor-pointer relative z-30"
+                  onClick={() => setIsCreateOpen(true)}
+                  aria-label="Add Bill Manually"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Manually
-                </Button>
+                </button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="relative z-50">
                 <DialogHeader>
                   <DialogTitle>Create New Bill</DialogTitle>
                 </DialogHeader>
@@ -156,47 +162,56 @@ const Bills = () => {
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
                     />
                   </div>
-                  <Button type="submit" disabled={createBill.isPending}>
+                  <button
+                    type="submit"
+                    disabled={createBill.isPending}
+                    className="w-full min-h-[44px] bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md px-4 py-2 transition-colors cursor-pointer"
+                  >
                     {createBill.isPending ? 'Creating...' : 'Create Bill'}
-                  </Button>
+                  </button>
                 </form>
               </DialogContent>
             </Dialog>
           </div>
         </div>
 
-        <Tabs defaultValue="upload" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upload">
+        <Tabs defaultValue="upload" className="w-full relative z-0">
+          <TabsList className="grid w-full grid-cols-2 relative z-10">
+            <TabsTrigger value="upload" className="cursor-pointer min-h-[44px] focus:ring-2 focus:ring-blue-500">
               <Upload className="h-4 w-4 mr-2" />
               Upload & AI Process
             </TabsTrigger>
-            <TabsTrigger value="manage">
+            <TabsTrigger value="manage" className="cursor-pointer min-h-[44px] focus:ring-2 focus:ring-blue-500">
               <Plus className="h-4 w-4 mr-2" />
               Manage Bills
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="upload" className="mt-6">
+          <TabsContent value="upload" className="mt-6 relative z-0">
             <BillUploadForm />
           </TabsContent>
 
-          <TabsContent value="manage" className="mt-6">
+          <TabsContent value="manage" className="mt-6 relative z-0">
             {bills?.length === 0 ? (
               <div className="text-center py-12">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No bills yet</h3>
                 <p className="text-gray-500 mb-4">Get started by uploading a bill or creating one manually</p>
                 <div className="flex gap-3 justify-center">
-                  <Button onClick={() => setIsCreateOpen(true)}>
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md transition-colors cursor-pointer"
+                    aria-label="Add Bill Manually"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Manually
-                  </Button>
+                  </button>
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {bills?.map((bill) => (
-                  <Card key={bill.id}>
+                  <Card key={bill.id} className="relative z-10">
                     <CardHeader>
                       <CardTitle className="flex justify-between items-start">
                         <span>{bill.name}</span>
@@ -222,20 +237,22 @@ const Bills = () => {
                               href={bill.file_url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 text-sm"
+                              className="text-blue-600 hover:text-blue-800 text-sm underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                             >
                               View uploaded file →
                             </a>
                           </div>
                         )}
                         {bill.status !== 'paid' && (
-                          <Button 
+                          <button
+                            type="button"
                             onClick={() => markAsPaid(bill.id)}
-                            className="w-full mt-4"
                             disabled={updateBill.isPending}
+                            className="w-full min-h-[44px] mt-4 bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md px-4 py-2 transition-colors cursor-pointer"
+                            aria-label={`Mark ${bill.name} as paid`}
                           >
                             Mark as Paid
-                          </Button>
+                          </button>
                         )}
                       </div>
                     </CardContent>
