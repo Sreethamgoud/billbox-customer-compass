@@ -78,42 +78,41 @@ const BillUploadForm: React.FC = () => {
 
   const getOverallProgress = () => {
     if (uploadProgress > 0 && uploadProgress < 100) {
-      return uploadProgress * 0.4; // Upload is 40% of total
+      return uploadProgress * 0.4;
     }
     if (uploadProgress === 100 && ocrProgress > 0) {
-      return 40 + (ocrProgress * 0.4); // OCR is 40% of total
+      return 40 + (ocrProgress * 0.4);
     }
     if (uploadProgress === 100 && ocrProgress === 100 && isProcessing) {
-      return 80; // AI processing is remaining 20%
+      return 80;
     }
     return 0;
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto relative z-10">
+    <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Camera className="h-5 w-5" />
           Upload & Process Bill
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6 relative z-10">
+      <CardContent className="space-y-6">
         {/* File Upload Section */}
         {!processedData && (
           <div className="space-y-4">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center relative">
               <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <div className="space-y-2">
-                <label htmlFor="bill-upload" className="text-lg font-medium cursor-pointer block hover:text-blue-600 focus-within:text-blue-600 transition-colors">
+                <Label htmlFor="bill-upload" className="text-lg font-medium cursor-pointer block hover:text-blue-600 transition-colors">
                   Choose a bill image
-                </label>
-                <input
+                </Label>
+                <Input
                   id="bill-upload"
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/jpg"
                   onChange={handleFileSelect}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                  aria-label="Upload bill image"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 />
                 <p className="text-sm text-gray-500">
                   Supports JPG, PNG, WEBP files up to 10MB
@@ -136,12 +135,10 @@ const BillUploadForm: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
+                  <Button
                     onClick={handleProcessBill}
                     disabled={isProcessing}
-                    className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] ml-4 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors cursor-pointer relative z-30"
-                    aria-label="Process uploaded bill"
+                    className="ml-4"
                   >
                     {isProcessing ? (
                       <>
@@ -151,7 +148,7 @@ const BillUploadForm: React.FC = () => {
                     ) : (
                       'Process Bill'
                     )}
-                  </button>
+                  </Button>
                 </div>
 
                 {isProcessing && (
@@ -170,7 +167,7 @@ const BillUploadForm: React.FC = () => {
 
         {/* Processed Data Edit Section */}
         {processedData && isEditing && (
-          <div className="space-y-4 relative z-10">
+          <div className="space-y-4">
             <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
               <Check className="h-5 w-5 text-green-600" />
               <span className="text-green-800 font-medium">
@@ -185,7 +182,6 @@ const BillUploadForm: React.FC = () => {
                   id="name"
                   value={processedData.name}
                   onChange={(e) => handleFieldChange('name', e.target.value)}
-                  className="min-h-[44px]"
                 />
               </div>
 
@@ -197,7 +193,6 @@ const BillUploadForm: React.FC = () => {
                   step="0.01"
                   value={processedData.amount}
                   onChange={(e) => handleFieldChange('amount', parseFloat(e.target.value) || 0)}
-                  className="min-h-[44px]"
                 />
               </div>
 
@@ -207,18 +202,18 @@ const BillUploadForm: React.FC = () => {
                   value={processedData.category} 
                   onValueChange={(value) => handleFieldChange('category', value)}
                 >
-                  <SelectTrigger className="min-h-[44px] cursor-pointer focus:ring-2 focus:ring-blue-500">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="relative z-50">
-                    <SelectItem value="Utilities" className="cursor-pointer min-h-[44px]">Utilities</SelectItem>
-                    <SelectItem value="Groceries" className="cursor-pointer min-h-[44px]">Groceries</SelectItem>
-                    <SelectItem value="Entertainment" className="cursor-pointer min-h-[44px]">Entertainment</SelectItem>
-                    <SelectItem value="Transportation" className="cursor-pointer min-h-[44px]">Transportation</SelectItem>
-                    <SelectItem value="Healthcare" className="cursor-pointer min-h-[44px]">Healthcare</SelectItem>
-                    <SelectItem value="Shopping" className="cursor-pointer min-h-[44px]">Shopping</SelectItem>
-                    <SelectItem value="Housing" className="cursor-pointer min-h-[44px]">Housing</SelectItem>
-                    <SelectItem value="Other" className="cursor-pointer min-h-[44px]">Other</SelectItem>
+                  <SelectContent>
+                    <SelectItem value="Utilities">Utilities</SelectItem>
+                    <SelectItem value="Groceries">Groceries</SelectItem>
+                    <SelectItem value="Entertainment">Entertainment</SelectItem>
+                    <SelectItem value="Transportation">Transportation</SelectItem>
+                    <SelectItem value="Healthcare">Healthcare</SelectItem>
+                    <SelectItem value="Shopping">Shopping</SelectItem>
+                    <SelectItem value="Housing">Housing</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -230,7 +225,6 @@ const BillUploadForm: React.FC = () => {
                   type="date"
                   value={processedData.due_date}
                   onChange={(e) => handleFieldChange('due_date', e.target.value)}
-                  className="min-h-[44px]"
                 />
               </div>
             </div>
@@ -242,7 +236,6 @@ const BillUploadForm: React.FC = () => {
                 value={processedData.description || ''}
                 onChange={(e) => handleFieldChange('description', e.target.value)}
                 rows={3}
-                className="min-h-[88px]"
               />
             </div>
 
@@ -257,29 +250,25 @@ const BillUploadForm: React.FC = () => {
               </div>
             )}
 
-            <div className="flex gap-3 relative z-30">
-              <button
-                type="button"
+            <div className="flex gap-3">
+              <Button
                 onClick={handleSaveBill}
-                className="flex-1 inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-md transition-colors cursor-pointer"
-                aria-label="Save processed bill"
+                className="flex-1 bg-green-600 hover:bg-green-700"
               >
                 <Check className="h-4 w-4 mr-2" />
                 Save Bill
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSelectedFile(null);
                   setProcessedData(null);
                   setIsEditing(false);
                 }}
-                className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded-md transition-colors cursor-pointer"
-                aria-label="Cancel editing"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         )}
