@@ -1,31 +1,16 @@
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { TrendingUp, TrendingDown, Bell } from 'lucide-react';
 import StatCard from '../StatCard';
 import { useSupabaseData, Bill } from '@/hooks/useSupabaseData';
-import { useQueryClient } from '@tanstack/react-query';
 
 interface OverviewCardsProps {
   isLoading?: boolean;
 }
 
 const OverviewCards: React.FC<OverviewCardsProps> = ({ isLoading = false }) => {
-  const { data, error, refetch } = useSupabaseData();
+  const { data, error } = useSupabaseData();
   const bills = data?.bills || [];
-  const queryClient = useQueryClient();
-
-  // Listen for bill changes and refresh
-  useEffect(() => {
-    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
-      if (event?.query?.queryKey?.includes('bills') || event?.query?.queryKey?.includes('dashboard-data')) {
-        refetch();
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [refetch, queryClient]);
 
   const stats = useMemo(() => {
     // Calculate total balance (sum of all bill amounts)

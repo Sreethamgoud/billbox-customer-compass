@@ -1,10 +1,10 @@
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import ChartCard from '../ChartCard';
 import ButtonGroup from '../ButtonGroup';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
-import { format, subDays, subMonths, startOfMonth, endOfMonth, parseISO, isWithinInterval, eachMonthOfInterval, eachDayOfInterval, getDay } from 'date-fns';
+import { format, subDays, subMonths, parseISO, isWithinInterval, eachMonthOfInterval, eachDayOfInterval, getDay } from 'date-fns';
 
 interface SpendTrendChartProps {
   activeTimeframe: number;
@@ -28,21 +28,18 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
   const chartData = useMemo(() => {
     const today = new Date();
     let startDate: Date;
-    let dateFormat = 'MMM d';
     let groupingFormat = 'MMM d';
     
     // Set date range based on active timeframe
     if (activeTimeframe === 0) {
       // Last 30 days
       startDate = subDays(today, 30);
-      dateFormat = 'MMM d';
       groupingFormat = 'MMM d';
     } else if (activeTimeframe === 1) {
       // Last 3 months
       startDate = subMonths(today, 3);
-      dateFormat = 'MMM';
       groupingFormat = 'MMM yyyy';
-    } else {
+    } else if (activeTimeframe === 2) {
       // Spending by Day of Week
       const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const dayTotals = Array(7).fill(0);
@@ -56,14 +53,14 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
       
       return dayNames.map((day, index) => ({
         date: day,
-        amount: dayTotals[index]
+        amount: Math.round(dayTotals[index] * 100) / 100
       }));
     }
 
     // Filter bills within the time range
     const filteredBills = bills.filter(bill => {
       const dueDate = parseISO(bill.due_date);
-      return isWithinInterval(dueDate, { start: startDate, end: today });
+      return isWithinInterval(dueDate, { start: startDate!, end: today });
     });
 
     // Group by period based on timeframe
@@ -71,14 +68,14 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
     
     if (activeTimeframe === 0) {
       // Daily grouping for last 30 days
-      const days = eachDayOfInterval({ start: startDate, end: today });
+      const days = eachDayOfInterval({ start: startDate!, end: today });
       days.forEach(day => {
         const key = format(day, groupingFormat);
         groupedData[key] = 0;
       });
     } else {
       // Monthly grouping
-      const months = eachMonthOfInterval({ start: startDate, end: today });
+      const months = eachMonthOfInterval({ start: startDate!, end: today });
       months.forEach(month => {
         const key = format(month, groupingFormat);
         groupedData[key] = 0;
@@ -98,10 +95,9 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
     return Object.keys(groupedData)
       .map(date => ({
         date,
-        amount: groupedData[date]
+        amount: Math.round(groupedData[date] * 100) / 100
       }))
       .sort((a, b) => {
-        if (activeTimeframe === 2) return 0; // Don't sort days of week
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
         return dateA.getTime() - dateB.getTime();

@@ -1,34 +1,14 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import ChartCard from '../ChartCard';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
-import { useQueryClient } from '@tanstack/react-query';
 
 const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
 
 const CategoryBreakdownChart: React.FC = () => {
-  const { data, isLoading, refetch } = useSupabaseData();
+  const { data, isLoading } = useSupabaseData();
   const bills = data?.bills || [];
-  const queryClient = useQueryClient();
-  
-  // Listen for bill changes and refresh
-  useEffect(() => {
-    const handleBillUpdate = () => {
-      refetch();
-    };
-
-    // Listen for query invalidations
-    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
-      if (event?.query?.queryKey?.includes('bills') || event?.query?.queryKey?.includes('dashboard-data')) {
-        refetch();
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [refetch, queryClient]);
   
   // Group bills by category and calculate totals
   const categoryData = React.useMemo(() => {
@@ -76,13 +56,14 @@ const CategoryBreakdownChart: React.FC = () => {
     );
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload;
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium">{`${payload[0].payload.category}`}</p>
-          <p className="text-blue-600">{`Amount: $${payload[0].value}`}</p>
-          <p className="text-gray-600 text-sm">{`${((payload[0].value / categoryData.reduce((sum, item) => sum + item.amount, 0)) * 100).toFixed(1)}% of total`}</p>
+          <p className="font-medium">{`${data.category}`}</p>
+          <p className="text-blue-600">{`Amount: $${data.amount}`}</p>
+          <p className="text-gray-600 text-sm">{`${((data.amount / categoryData.reduce((sum, item) => sum + item.amount, 0)) * 100).toFixed(1)}% of total`}</p>
         </div>
       );
     }
