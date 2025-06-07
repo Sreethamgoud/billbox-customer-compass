@@ -31,6 +31,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setShowUserMenu(false);
   };
 
+  const closeMenus = () => {
+    setIsMenuOpen(false);
+    setShowUserMenu(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -39,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link to="/" className="text-2xl font-bold text-blue-600">
+              <Link to="/" className="text-2xl font-bold text-blue-600" onClick={closeMenus}>
                 BillBox
               </Link>
             </div>
@@ -50,10 +55,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  onClick={closeMenus}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer hover:bg-blue-50 ${
                     isActive(item.href)
                       ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                      : 'text-gray-700 hover:text-blue-600'
                   }`}
                 >
                   {item.name}
@@ -70,8 +76,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {/* User menu */}
               <div className="relative">
                 <button 
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="p-2 text-gray-400 hover:text-gray-500 flex items-center space-x-2 transition-colors"
+                  onClick={() => {
+                    setShowUserMenu(!showUserMenu);
+                    setIsMenuOpen(false);
+                  }}
+                  className="p-2 text-gray-400 hover:text-gray-500 flex items-center space-x-2 transition-colors cursor-pointer"
                 >
                   <User size={20} />
                   <span className="hidden md:inline text-sm text-gray-700">
@@ -83,7 +92,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left transition-colors"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left transition-colors cursor-pointer"
                     >
                       <LogOut size={16} />
                       <span>Sign out</span>
@@ -94,8 +103,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               
               {/* Mobile menu button */}
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden p-2 text-gray-400 hover:text-gray-500 transition-colors"
+                onClick={() => {
+                  setIsMenuOpen(!isMenuOpen);
+                  setShowUserMenu(false);
+                }}
+                className="md:hidden p-2 text-gray-400 hover:text-gray-500 transition-colors cursor-pointer"
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -111,12 +123,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors cursor-pointer ${
                     isActive(item.href)
                       ? 'text-blue-600 bg-blue-50'
                       : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={closeMenus}
                 >
                   {item.name}
                 </Link>
@@ -124,9 +136,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <button
                 onClick={() => {
                   handleSignOut();
-                  setIsMenuOpen(false);
+                  closeMenus();
                 }}
-                className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 w-full text-left transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 w-full text-left transition-colors cursor-pointer"
               >
                 <LogOut size={16} />
                 <span>Sign out</span>
@@ -141,7 +153,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* Footer - Only one footer with correct year */}
+      {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p>&copy; 2025 BillBox. All rights reserved.</p>
