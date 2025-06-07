@@ -12,7 +12,6 @@ import AIAssistant from "../components/AIAssistant";
 
 const Dashboard = () => {
   const [activeTimeframe, setActiveTimeframe] = useState(0);
-  // Force refresh when navigating back to the dashboard
   const [refreshKey, setRefreshKey] = useState(0);
   const { data: dashboardData, error, isLoading, refetch } = useSupabaseData();
 
@@ -62,7 +61,7 @@ const Dashboard = () => {
               refetch();
               setRefreshKey(prev => prev + 1);
             }} 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Retry
           </button>
@@ -72,11 +71,11 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="py-8 px-4">
+    <div className="py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Financial Dashboard</h1>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Financial Dashboard</h1>
           <p className="text-gray-600">Welcome back! Here's your financial overview for this month.</p>
         </div>
 
@@ -84,7 +83,7 @@ const Dashboard = () => {
         <OverviewCards isLoading={isLoading} />
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
           <SpendTrendChart 
             activeTimeframe={activeTimeframe} 
             onTimeframeChange={setActiveTimeframe} 
@@ -93,26 +92,21 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Bills and Budget Progress */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
           <RecentBillsTable bills={bills} isLoading={isLoading} />
           <BudgetProgressSection budgets={budgets} isLoading={isLoading} />
         </div>
 
         {/* Alerts and Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
           <AlertsPanel alerts={alerts} isLoading={isLoading} />
           <QuickActionsSection />
         </div>
 
         {/* AI Assistant Section */}
-        <div id="ai-assistant" className="mb-8">
+        <div id="ai-assistant" className="mb-6 sm:mb-8">
           <AIAssistant />
         </div>
-
-        {/* Footer */}
-        <footer className="text-center text-gray-500 mt-16">
-          <p>&copy; 2024 BillBox. All rights reserved.</p>
-        </footer>
       </div>
     </div>
   );

@@ -1,16 +1,31 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Bell } from 'lucide-react';
 import StatCard from '../StatCard';
 import { useSupabaseData, Bill } from '@/hooks/useSupabaseData';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface OverviewCardsProps {
   isLoading?: boolean;
 }
 
 const OverviewCards: React.FC<OverviewCardsProps> = ({ isLoading = false }) => {
-  const { data, error } = useSupabaseData();
+  const { data, error, refetch } = useSupabaseData();
   const bills = data?.bills || [];
+  const queryClient = useQueryClient();
+
+  // Listen for bill changes and refresh
+  useEffect(() => {
+    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+      if (event?.query?.queryKey?.includes('bills') || event?.query?.queryKey?.includes('dashboard-data')) {
+        refetch();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [refetch, queryClient]);
 
   const stats = useMemo(() => {
     // Calculate total balance (sum of all bill amounts)
@@ -30,8 +45,10 @@ const OverviewCards: React.FC<OverviewCardsProps> = ({ isLoading = false }) => {
     // Calculate bills due (count of upcoming bills)
     const billsDue = bills.filter(bill => bill.status === 'upcoming' || bill.status === 'due').length;
     
-    // Calculate savings goal (dummy calculation - 70% of total)
-    const savingsGoal = Math.round((1 - (monthlySpending / (totalBillAmount || 1))) * 100);
+    // Calculate savings goal (percentage based on paid vs unpaid bills)
+    const paidBills = bills.filter(bill => bill.status === 'paid');
+    const paidAmount = paidBills.reduce((sum, bill) => sum + Number(bill.amount), 0);
+    const savingsGoal = totalBillAmount > 0 ? Math.round((paidAmount / totalBillAmount) * 100) : 0;
     
     return {
       totalBalance: totalBillAmount.toFixed(2),
@@ -64,7 +81,7 @@ const OverviewCards: React.FC<OverviewCardsProps> = ({ isLoading = false }) => {
       icon: Bell
     },
     {
-      title: "Savings Goal",
+      title: "Payment Progress",
       value: `${stats.savingsGoal}%`,
       change: "+5% this month",
       trend: "positive" as const,
@@ -74,7 +91,7 @@ const OverviewCards: React.FC<OverviewCardsProps> = ({ isLoading = false }) => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {[...Array(4)].map((_, index) => (
           <div key={index} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
         ))}
@@ -83,7 +100,7 @@ const OverviewCards: React.FC<OverviewCardsProps> = ({ isLoading = false }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
       {overviewStats.map((stat, index) => (
         <StatCard
           key={index}

@@ -1,10 +1,10 @@
 
 import React, { useEffect, useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import ChartCard from '../ChartCard';
 import ButtonGroup from '../ButtonGroup';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
-import { format, subDays, subMonths, startOfMonth, endOfMonth, parseISO, isWithinInterval, eachMonthOfInterval } from 'date-fns';
+import { format, subDays, subMonths, startOfMonth, endOfMonth, parseISO, isWithinInterval, eachMonthOfInterval, eachDayOfInterval, getDay } from 'date-fns';
 
 interface SpendTrendChartProps {
   activeTimeframe: number;
@@ -18,7 +18,7 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
   const timeframeButtons = [
     { label: "Last 30 days" },
     { label: "Last 3 months" },
-    { label: "Last 6 months" }
+    { label: "Spending by Day of Week" }
   ];
 
   const { data, isLoading } = useSupabaseData();
@@ -43,10 +43,21 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
       dateFormat = 'MMM';
       groupingFormat = 'MMM yyyy';
     } else {
-      // Last 6 months
-      startDate = subMonths(today, 6);
-      dateFormat = 'MMM';
-      groupingFormat = 'MMM yyyy';
+      // Spending by Day of Week
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dayTotals = Array(7).fill(0);
+      
+      // Calculate spending by day of week
+      bills.forEach(bill => {
+        const dueDate = parseISO(bill.due_date);
+        const dayOfWeek = getDay(dueDate);
+        dayTotals[dayOfWeek] += Number(bill.amount);
+      });
+      
+      return dayNames.map((day, index) => ({
+        date: day,
+        amount: dayTotals[index]
+      }));
     }
 
     // Filter bills within the time range
@@ -60,11 +71,11 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
     
     if (activeTimeframe === 0) {
       // Daily grouping for last 30 days
-      for (let i = 0; i <= 30; i++) {
-        const date = subDays(today, i);
-        const key = format(date, groupingFormat);
+      const days = eachDayOfInterval({ start: startDate, end: today });
+      days.forEach(day => {
+        const key = format(day, groupingFormat);
         groupedData[key] = 0;
-      }
+      });
     } else {
       // Monthly grouping
       const months = eachMonthOfInterval({ start: startDate, end: today });
@@ -90,7 +101,7 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
         amount: groupedData[date]
       }))
       .sort((a, b) => {
-        // Sort dates
+        if (activeTimeframe === 2) return 0; // Don't sort days of week
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
         return dateA.getTime() - dateB.getTime();
@@ -117,9 +128,11 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
     );
   }
 
+  const chartTitle = activeTimeframe === 2 ? "Spending by Day of Week" : "Spend Trend";
+
   return (
     <ChartCard
-      title="Spend Trend"
+      title={chartTitle}
       actions={
         <ButtonGroup
           buttons={timeframeButtons}
@@ -131,11 +144,21 @@ const SpendTrendChart: React.FC<SpendTrendChartProps> = ({
     >
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
-            <Bar dataKey="amount" fill="#3b82f6" radius={4} />
+          <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <XAxis 
+              dataKey="date" 
+              angle={activeTimeframe === 2 ? -45 : 0}
+              textAnchor={activeTimeframe === 2 ? "end" : "middle"}
+              height={activeTimeframe === 2 ? 60 : 30}
+              fontSize={12}
+            />
+            <YAxis fontSize={12} />
+            <Tooltip 
+              formatter={(value) => [`$${value}`, 'Amount']}
+              labelFormatter={(label) => activeTimeframe === 2 ? `${label}` : `Date: ${label}`}
+            />
+            <Legend />
+            <Bar dataKey="amount" fill="#3b82f6" radius={4} name="Spending Amount" />
           </BarChart>
         </ResponsiveContainer>
       </div>

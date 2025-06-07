@@ -8,6 +8,7 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasShownWelcome, setHasShownWelcome] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -19,8 +20,9 @@ export const useAuth = () => {
         setUser(session?.user ?? null);
         setLoading(false);
 
-        // When user signs up or signs in, show welcome message
-        if (event === 'SIGNED_IN' && session?.user) {
+        // Only show welcome message on actual sign in event and if not shown before in this session
+        if (event === 'SIGNED_IN' && session?.user && !hasShownWelcome) {
+          setHasShownWelcome(true);
           toast({
             title: "Welcome!",
             description: "You have successfully signed in to BillBox",
@@ -29,7 +31,7 @@ export const useAuth = () => {
       }
     );
 
-    // Check for existing session
+    // Check for existing session without showing welcome message
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('Initial session:', session?.user?.id);
       setSession(session);
@@ -62,6 +64,7 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    setHasShownWelcome(false); // Reset welcome flag on sign out
     await supabase.auth.signOut();
   };
 

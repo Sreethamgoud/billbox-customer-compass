@@ -63,7 +63,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             {/* Right side */}
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-500">
+              <button className="p-2 text-gray-400 hover:text-gray-500 transition-colors">
                 <Bell size={20} />
               </button>
               
@@ -71,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="relative">
                 <button 
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="p-2 text-gray-400 hover:text-gray-500 flex items-center space-x-2"
+                  className="p-2 text-gray-400 hover:text-gray-500 flex items-center space-x-2 transition-colors"
                 >
                   <User size={20} />
                   <span className="hidden md:inline text-sm text-gray-700">
@@ -83,7 +83,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left transition-colors"
                     >
                       <LogOut size={16} />
                       <span>Sign out</span>
@@ -95,7 +95,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden p-2 text-gray-400 hover:text-gray-500"
+                className="md:hidden p-2 text-gray-400 hover:text-gray-500 transition-colors"
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -126,7 +126,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   handleSignOut();
                   setIsMenuOpen(false);
                 }}
-                className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 w-full text-left"
+                className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 w-full text-left transition-colors"
               >
                 <LogOut size={16} />
                 <span>Sign out</span>
@@ -141,7 +141,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* Footer */}
+      {/* Footer - Only one footer with correct year */}
       <footer className="bg-gray-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p>&copy; 2025 BillBox. All rights reserved.</p>
