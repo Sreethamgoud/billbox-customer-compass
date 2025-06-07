@@ -91,7 +91,11 @@ const CategoryBreakdownChart: React.FC = () => {
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend 
-              formatter={(value, entry) => `${value} ($${entry.payload.amount})`}
+              formatter={(value: string, entry: any) => {
+                const categoryItem = categoryData.find(item => item.category === value);
+                const amount = categoryItem ? categoryItem.amount : 0;
+                return `${value} ($${amount})`;
+              }}
               wrapperStyle={{ fontSize: '12px' }}
             />
           </PieChart>
