@@ -91,3 +91,10 @@ export const parseOCRText = (text: string): ParsedBillData => {
 
   return result;
 };
+
+// New function to combine text from multiple pages
+export const combinePageTexts = (pageTexts: string[]): string => {
+  return pageTexts
+    .filter(text => text.trim().length > 0)
+    .join('\n\n--- PAGE BREAK ---\n\n');
+};

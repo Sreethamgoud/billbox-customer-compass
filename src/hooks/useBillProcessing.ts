@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFileUpload } from './useFileUpload';
@@ -20,7 +19,7 @@ export interface ProcessedBillData {
 export const useBillProcessing = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { uploadFile, isUploading, uploadProgress } = useFileUpload();
-  const { extractTextFromUrl, isProcessing: isOCRProcessing, ocrProgress } = useOCR();
+  const { extractTextFromUrl, isProcessing: isOCRProcessing, ocrProgress, currentPage, totalPages } = useOCR();
   const { createBill } = useBillMutations();
   const { toast } = useToast();
 
@@ -61,7 +60,7 @@ export const useBillProcessing = () => {
         name: extractedData.merchant || 'Uploaded Bill',
         amount: extractedData.amount || 0,
         category: categorization.category || 'Other',
-        description: `AI extracted from receipt. ${categorization.reasoning || ''}`,
+        description: `AI extracted from ${file.type === 'application/pdf' ? 'PDF document' : 'receipt'}. ${categorization.reasoning || ''}`,
         due_date: extractedData.date 
           ? formatDateForInput(extractedData.date) 
           : new Date().toISOString().split('T')[0],
@@ -154,5 +153,7 @@ export const useBillProcessing = () => {
     isProcessing: isProcessing || isUploading || isOCRProcessing,
     uploadProgress,
     ocrProgress,
+    currentPage,
+    totalPages,
   };
 };

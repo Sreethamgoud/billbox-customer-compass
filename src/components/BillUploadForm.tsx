@@ -12,15 +12,21 @@ const BillUploadForm: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [processedData, setProcessedData] = useState<ProcessedBillData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const { processUploadedBill, saveBill, isProcessing, uploadProgress, ocrProgress } = useBillProcessing();
+  const { processUploadedBill, saveBill, isProcessing, uploadProgress, ocrProgress, currentPage, totalPages } = useBillProcessing();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Check file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'application/pdf'];
       if (!allowedTypes.includes(file.type)) {
-        alert('Please upload an image file (JPG, PNG, WEBP). PDF support coming soon!');
+        alert('Please upload an image file (JPG, PNG, WEBP) or PDF document.');
+        return;
+      }
+      
+      // Check file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB.');
         return;
       }
       
@@ -93,6 +99,8 @@ const BillUploadForm: React.FC = () => {
               isProcessing={isProcessing}
               uploadProgress={uploadProgress}
               ocrProgress={ocrProgress}
+              currentPage={currentPage}
+              totalPages={totalPages}
             />
           </>
         )}

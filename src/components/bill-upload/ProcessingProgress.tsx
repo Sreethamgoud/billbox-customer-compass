@@ -7,18 +7,25 @@ interface ProcessingProgressProps {
   isProcessing: boolean;
   uploadProgress: number;
   ocrProgress: number;
+  currentPage?: number;
+  totalPages?: number;
 }
 
 const ProcessingProgress: React.FC<ProcessingProgressProps> = ({
   isProcessing,
   uploadProgress,
   ocrProgress,
+  currentPage,
+  totalPages,
 }) => {
   const getProgressMessage = () => {
     if (uploadProgress > 0 && uploadProgress < 100) {
       return `Uploading file... ${uploadProgress}%`;
     }
     if (ocrProgress > 0 && ocrProgress < 100) {
+      if (currentPage && totalPages) {
+        return `Processing page ${currentPage} of ${totalPages}... ${ocrProgress}%`;
+      }
       return `Extracting text... ${ocrProgress}%`;
     }
     if (isProcessing) {
@@ -29,10 +36,10 @@ const ProcessingProgress: React.FC<ProcessingProgressProps> = ({
 
   const getOverallProgress = () => {
     if (uploadProgress > 0 && uploadProgress < 100) {
-      return uploadProgress * 0.4;
+      return uploadProgress * 0.3;
     }
     if (uploadProgress === 100 && ocrProgress > 0) {
-      return 40 + (ocrProgress * 0.4);
+      return 30 + (ocrProgress * 0.5);
     }
     if (uploadProgress === 100 && ocrProgress === 100 && isProcessing) {
       return 80;

@@ -27,20 +27,17 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
             htmlFor="bill-upload" 
             className="text-lg font-medium cursor-pointer block hover:text-blue-600 transition-colors"
           >
-            Choose a bill image
+            Choose a bill image or PDF
           </Label>
           <Input
             id="bill-upload"
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/jpg"
+            accept="image/jpeg,image/png,image/webp,image/jpg,application/pdf"
             onChange={onFileSelect}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           />
           <p className="text-sm text-gray-500">
-            Supports JPG, PNG, WEBP files up to 10MB
-          </p>
-          <p className="text-xs text-amber-600">
-            Note: PDF support coming soon! Please use image files for now.
+            Supports JPG, PNG, WEBP, and PDF files up to 10MB
           </p>
         </div>
       </div>

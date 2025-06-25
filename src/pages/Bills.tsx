@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plus, Upload } from 'lucide-react';
 import { useBills } from '@/hooks/useSupabaseData';
@@ -82,7 +81,7 @@ const Bills = () => {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Bills Management</h1>
-            <p className="text-gray-600 mt-2">Upload bills with AI categorization or add manually</p>
+            <p className="text-gray-600 mt-2">Upload bills (images & PDFs) with AI categorization or add manually</p>
           </div>
           <div className="flex gap-3">
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -165,7 +164,7 @@ const Bills = () => {
                   <Button
                     type="submit"
                     disabled={createBill.isPending}
-                    className="w-full"
+                    className="w-full min-h-[44px]"
                   >
                     {createBill.isPending ? 'Creating...' : 'Create Bill'}
                   </Button>
@@ -199,7 +198,7 @@ const Bills = () => {
                 <div className="flex gap-3 justify-center">
                   <Button
                     onClick={() => setIsCreateOpen(true)}
-                    className="z-10"
+                    className="z-10 min-h-[44px]"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Manually
@@ -246,7 +245,7 @@ const Bills = () => {
                             onClick={() => markAsPaid(bill.id)}
                             disabled={updateBill.isPending}
                             variant="default"
-                            className="w-full mt-4 bg-green-600 hover:bg-green-700"
+                            className="w-full mt-4 bg-green-600 hover:bg-green-700 min-h-[44px]"
                           >
                             Mark as Paid
                           </Button>
